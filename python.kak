@@ -22,8 +22,16 @@ hook global GlobalSetOption python_bridge_fifo_enabled=false %{
     }
 }
 
+define-command -docstring 'Check if python is installed' \
+python-bridge-check-python %{
+    evaluate-commands %sh{
+        [ -x "$(command -v python)" ] || echo fail "Python is not installed"
+    }
+}
+
 define-command -docstring 'Create FIFOs and start python -i' \
 python-bridge-start %{
+    python-bridge-check-python
     nop %sh{
         if ! $kak_opt_python_bridge_running; then
             mkdir -p $kak_opt_python_bridge_folder
